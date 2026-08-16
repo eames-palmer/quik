@@ -21,7 +21,6 @@ package dev.octoshrimpy.quik.common.util
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
-import android.os.Build
 import androidx.core.content.res.getColorOrThrow
 import dev.octoshrimpy.quik.R
 import dev.octoshrimpy.quik.common.util.extensions.getColorCompat
@@ -39,6 +38,9 @@ class Colors @Inject constructor(
     private val context: Context,
     private val prefs: Preferences
 ) {
+
+    val dynamicColorsSupported: Boolean
+        get() = context.resources.getBoolean(R.bool.dynamic_colors_supported)
 
     data class Theme(val theme: Int, private val colors: Colors) {
         val highlight by lazy { colors.highlightColorForTheme(theme) }
@@ -108,11 +110,25 @@ class Colors @Inject constructor(
     }
 
     private fun dynamicThemeColor(): Int? {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return null
+        if (!dynamicColorsSupported) return null
 
-        val color = when (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+        val isNight = prefs.night.get() ||
+                (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+                Configuration.UI_MODE_NIGHT_YES
+
+        val color = when (isNight) {
             Configuration.UI_MODE_NIGHT_YES -> android.R.color.system_accent1_200
             else -> android.R.color.system_accent1_600
+        }
+        return context.getColor(color)
+    }
+
+    fun dynamicBackgroundColor(isNight: Boolean): Int? {
+        if (!dynamicColorsSupported || !prefs.dynamicColors.get()) return null
+
+        val color = when (isNight) {
+            true -> android.R.color.system_neutral1_900
+            false -> android.R.color.system_neutral1_10
         }
         return context.getColor(color)
     }
