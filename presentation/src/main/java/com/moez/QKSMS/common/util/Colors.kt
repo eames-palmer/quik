@@ -116,13 +116,13 @@ class Colors @Inject constructor(
 
         return dynamicColor(
             android.R.color.system_accent1_600,
-            android.R.color.system_accent1_200,
+            android.R.color.system_accent1_100,
             isNight
         )
     }
 
     fun dynamicBackgroundColor(isNight: Boolean): Int? = dynamicColor(
-        android.R.color.system_neutral1_10,
+        android.R.color.system_neutral1_50,
         android.R.color.system_neutral1_900,
         isNight
     )
