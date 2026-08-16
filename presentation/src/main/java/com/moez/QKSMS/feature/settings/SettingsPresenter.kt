@@ -77,6 +77,9 @@ class SettingsPresenter @Inject constructor(
         disposables += prefs.black.asObservable()
                 .subscribe { black -> newState { copy(black = black) } }
 
+        disposables += prefs.dynamicColors.asObservable()
+                .subscribe { dynamicColors -> newState { copy(dynamicColors = dynamicColors) } }
+
         disposables += prefs.notifications().asObservable()
                 .subscribe { enabled -> newState { copy(notificationsEnabled = enabled) } }
 
@@ -175,6 +178,8 @@ class SettingsPresenter @Inject constructor(
                         }
 
                         R.id.black -> prefs.black.set(!prefs.black.get())
+
+                        R.id.dynamicColors -> prefs.dynamicColors.set(!prefs.dynamicColors.get())
 
                         R.id.autoEmoji -> prefs.autoEmoji.set(!prefs.autoEmoji.get())
 
