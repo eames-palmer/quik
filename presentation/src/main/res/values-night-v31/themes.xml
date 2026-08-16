@@ -6,8 +6,8 @@
         <item name="android:navigationBarColor">@android:color/system_neutral1_900</item>
         <item name="android:statusBarColor">@android:color/system_neutral1_900</item>
         <item name="android:windowBackground">@android:color/system_neutral1_900</item>
-        <item name="android:queryBackground">@android:color/system_neutral1_700</item>
-        <item name="bubbleColor">@android:color/system_neutral1_700</item>
+        <item name="android:queryBackground">@android:color/system_neutral1_800</item>
+        <item name="bubbleColor">@android:color/system_neutral1_800</item>
         <item name="colorPrimary">@android:color/system_neutral1_900</item>
         <item name="colorPrimaryDark">@android:color/system_neutral1_900</item>
     </style>
@@ -16,7 +16,7 @@
         <item name="android:colorBackground">@android:color/system_neutral1_900</item>
         <item name="android:windowBackground">@android:color/system_neutral1_900</item>
         <item name="actionBarPopupTheme">@style/PopupTheme.Dynamic</item>
-        <item name="bubbleColor">@android:color/system_neutral1_700</item>
+        <item name="bubbleColor">@android:color/system_neutral1_800</item>
         <item name="colorPrimary">@android:color/system_neutral1_900</item>
         <item name="colorPrimaryDark">@android:color/system_neutral1_900</item>
     </style>
@@ -24,7 +24,7 @@
     <style name="PopupTheme.Dynamic" parent="PopupTheme">
         <item name="android:colorBackground">@android:color/system_neutral1_900</item>
         <item name="android:textColor">@color/textPrimaryDark</item>
-        <item name="bubbleColor">@android:color/system_neutral1_700</item>
+        <item name="bubbleColor">@android:color/system_neutral1_800</item>
     </style>
 
 </resources>
