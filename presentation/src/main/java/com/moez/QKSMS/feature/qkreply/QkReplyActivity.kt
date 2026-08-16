@@ -178,7 +178,7 @@ class QkReplyActivity : QkThemedActivity(), QkReplyView {
 
     override fun getActivityThemeRes(black: Boolean) = when {
         black -> R.style.AppThemeDialog_Black
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && prefs.dynamicColors.get() -> R.style.AppThemeDialog_Dynamic
+        colors.dynamicColorsSupported && prefs.dynamicColors.get() -> R.style.AppThemeDialog_Dynamic
         else -> R.style.AppThemeDialog
     }
 

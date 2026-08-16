@@ -143,7 +143,7 @@ class SettingsController : QkController<SettingsControllerBinding, SettingsView,
     override fun messageLinkHandlingSelected(): Observable<Int> = messageLinkHandlingDialog.adapter.menuItemClicks
 
     override fun render(state: SettingsState) {
-        val dynamicColorsEnabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && state.dynamicColors
+        val dynamicColorsEnabled = colors.dynamicColorsSupported && state.dynamicColors
         binding.theme.isEnabled = !dynamicColorsEnabled
         binding.theme.alpha = if (dynamicColorsEnabled) 0.5f else 1f
         binding.theme.findViewById<View>(R.id.themePreview)?.setBackgroundTint(state.theme)
@@ -157,7 +157,7 @@ class SettingsController : QkController<SettingsControllerBinding, SettingsView,
         binding.black.setVisible(state.nightModeId != Preferences.NIGHT_MODE_OFF)
         binding.black.checkbox?.isChecked = state.black
 
-        binding.dynamicColors.setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+        binding.dynamicColors.setVisible(colors.dynamicColorsSupported)
         binding.dynamicColors.checkbox?.isChecked = state.dynamicColors
 
         binding.autoEmoji.checkbox?.isChecked = state.autoEmojiEnabled
