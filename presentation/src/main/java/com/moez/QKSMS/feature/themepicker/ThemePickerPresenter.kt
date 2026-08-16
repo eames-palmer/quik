@@ -89,7 +89,7 @@ class ThemePickerPresenter @Inject constructor(
 
         // Reset the theme
         view.clearHsvThemeClicks()
-            .withLatestFrom(currentTheme) { _, color -> color }
+                .withLatestFrom(currentTheme) { _, color -> color }
                 .autoDisposable(view.scope())
                 .subscribe { color -> view.setCurrentTheme(color) }
     }

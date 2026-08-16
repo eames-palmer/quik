@@ -98,8 +98,8 @@ class Colors @Inject constructor(
         }
         val colors = when {
             recipient == null -> Observables.combineLatest(
-                    pref.asObservable(),
-                    prefs.dynamicColors.asObservable()
+                pref.asObservable(),
+                prefs.dynamicColors.asObservable()
             ) { color, dynamicColors -> dynamicThemeColor().takeIf { dynamicColors } ?: color }
             else -> pref.asObservable()
         }
