@@ -85,8 +85,8 @@ class Colors @Inject constructor(
     fun theme(recipient: Recipient? = null): Theme {
         val pref = prefs.theme(recipient?.id ?: 0)
         val color = when {
-            recipient == null && prefs.dynamicColors.get() -> dynamicThemeColor() ?: pref.get()
-            recipient == null || !prefs.autoColor.get() || pref.isSet -> pref.get()
+            recipient == null -> dynamicThemeColor() ?: pref.get()
+            !prefs.autoColor.get() || pref.isSet -> pref.get()
             else -> generateColor(recipient)
         }
         return Theme(color, this)
@@ -102,7 +102,7 @@ class Colors @Inject constructor(
             recipient == null -> Observables.combineLatest(
                 pref.asObservable(),
                 prefs.dynamicColors.asObservable()
-            ) { color, dynamicColors -> dynamicThemeColor().takeIf { dynamicColors } ?: color }
+            ) { color, _ -> dynamicThemeColor() ?: color }
             else -> pref.asObservable()
         }
         return colors
@@ -110,29 +110,27 @@ class Colors @Inject constructor(
     }
 
     private fun dynamicThemeColor(): Int? {
-        if (!dynamicColorsSupported) return null
-
         val isNight = prefs.night.get() ||
                 (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
                 Configuration.UI_MODE_NIGHT_YES
 
-        val color = if (isNight) {
-            android.R.color.system_accent1_200
-        } else {
-            android.R.color.system_accent1_600
-        }
-        return context.getColor(color)
+        return dynamicColor(
+            android.R.color.system_accent1_600,
+            android.R.color.system_accent1_200,
+            isNight
+        )
     }
 
-    fun dynamicBackgroundColor(isNight: Boolean): Int? {
+    fun dynamicBackgroundColor(isNight: Boolean): Int? = dynamicColor(
+        android.R.color.system_neutral1_10,
+        android.R.color.system_neutral1_900,
+        isNight
+    )
+
+    private fun dynamicColor(lightColor: Int, darkColor: Int, isNight: Boolean): Int? {
         if (!dynamicColorsSupported || !prefs.dynamicColors.get()) return null
 
-        val color = if (isNight) {
-            android.R.color.system_neutral1_900
-        } else {
-            android.R.color.system_neutral1_10
-        }
-        return context.getColor(color)
+        return context.getColor(if (isNight) darkColor else lightColor)
     }
 
     fun highlightColorForTheme(theme: Int): Int = FloatArray(3)
