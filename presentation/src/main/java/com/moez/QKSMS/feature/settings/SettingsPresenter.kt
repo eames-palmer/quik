@@ -50,8 +50,8 @@ class SettingsPresenter @Inject constructor(
     private val externalNavigator: ExternalNavigator,
     private val nightModeManager: NightModeManager,
     private val prefs: Preferences,
-        private val syncMessages: SyncMessages,
-        private val widgetManager: WidgetManager
+    private val syncMessages: SyncMessages,
+    private val widgetManager: WidgetManager
 ) : QkPresenter<SettingsView, SettingsState>(SettingsState(
         nightModeId = prefs.nightMode.get()
 )) {
@@ -183,10 +183,10 @@ class SettingsPresenter @Inject constructor(
 
                         R.id.black -> prefs.black.set(!prefs.black.get())
 
-                                                R.id.dynamicColors -> {
-                                                        prefs.dynamicColors.set(!prefs.dynamicColors.get())
-                                                        widgetManager.updateTheme()
-                                                }
+                        R.id.dynamicColors -> {
+                            prefs.dynamicColors.set(!prefs.dynamicColors.get())
+                            widgetManager.updateTheme()
+                        }
 
                         R.id.autoEmoji -> prefs.autoEmoji.set(!prefs.autoEmoji.get())
 

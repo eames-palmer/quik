@@ -20,8 +20,8 @@ package dev.octoshrimpy.quik.feature.qkreply
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Bundle
 import android.os.Build
+import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
