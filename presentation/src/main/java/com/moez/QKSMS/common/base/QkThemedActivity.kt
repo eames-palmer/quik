@@ -162,6 +162,7 @@ abstract class QkThemedActivity : QkActivity() {
      */
     open fun getActivityThemeRes(black: Boolean) = when {
         black -> R.style.AppTheme_Black
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && prefs.dynamicColors.get() -> R.style.AppTheme_Dynamic
         else -> R.style.AppTheme
     }
 

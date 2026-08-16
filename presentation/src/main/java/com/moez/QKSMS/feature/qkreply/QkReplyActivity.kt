@@ -21,6 +21,7 @@ package dev.octoshrimpy.quik.feature.qkreply
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Build
 import android.speech.RecognizerIntent
 import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
@@ -177,6 +178,7 @@ class QkReplyActivity : QkThemedActivity(), QkReplyView {
 
     override fun getActivityThemeRes(black: Boolean) = when {
         black -> R.style.AppThemeDialog_Black
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && prefs.dynamicColors.get() -> R.style.AppThemeDialog_Dynamic
         else -> R.style.AppThemeDialog
     }
 
