@@ -111,8 +111,8 @@ class Colors @Inject constructor(
 
     private fun dynamicThemeColor(): Int? {
         val isNight = prefs.night.get() ||
-                (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
-                Configuration.UI_MODE_NIGHT_YES
+            (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+            Configuration.UI_MODE_NIGHT_YES
 
         return dynamicColor(
             android.R.color.system_accent1_600,
