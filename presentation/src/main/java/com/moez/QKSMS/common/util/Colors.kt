@@ -19,13 +19,16 @@
 package dev.octoshrimpy.quik.common.util
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
+import android.os.Build
 import androidx.core.content.res.getColorOrThrow
 import dev.octoshrimpy.quik.R
 import dev.octoshrimpy.quik.common.util.extensions.getColorCompat
 import dev.octoshrimpy.quik.model.Recipient
 import dev.octoshrimpy.quik.util.Preferences
 import io.reactivex.Observable
+import io.reactivex.rxkotlin.Observables
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.absoluteValue
@@ -80,6 +83,7 @@ class Colors @Inject constructor(
     fun theme(recipient: Recipient? = null): Theme {
         val pref = prefs.theme(recipient?.id ?: 0)
         val color = when {
+            recipient == null && prefs.dynamicColors.get() -> dynamicThemeColor() ?: pref.get()
             recipient == null || !prefs.autoColor.get() || pref.isSet -> pref.get()
             else -> generateColor(recipient)
         }
@@ -92,8 +96,25 @@ class Colors @Inject constructor(
             prefs.autoColor.get() -> prefs.theme(recipient.id, generateColor(recipient))
             else -> prefs.theme(recipient.id, prefs.theme().get())
         }
-        return pref.asObservable()
+        val colors = when {
+            recipient == null -> Observables.combineLatest(
+                    pref.asObservable(),
+                    prefs.dynamicColors.asObservable()
+            ) { color, dynamicColors -> dynamicThemeColor().takeIf { dynamicColors } ?: color }
+            else -> pref.asObservable()
+        }
+        return colors
                 .map { color -> Theme(color, this) }
+    }
+
+    private fun dynamicThemeColor(): Int? {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return null
+
+        val color = when (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> android.R.color.system_accent1_200
+            else -> android.R.color.system_accent1_600
+        }
+        return context.getColor(color)
     }
 
     fun highlightColorForTheme(theme: Int): Int = FloatArray(3)

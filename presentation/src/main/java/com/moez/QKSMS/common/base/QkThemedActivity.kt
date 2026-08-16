@@ -100,7 +100,14 @@ abstract class QkThemedActivity : QkActivity() {
         super.onCreate(savedInstanceState)
 
         // When certain preferences change, we need to recreate the activity
-        val triggers = listOf(prefs.nightMode, prefs.night, prefs.black, prefs.textSize, prefs.systemFont)
+        val triggers = listOf(
+            prefs.nightMode,
+            prefs.night,
+            prefs.black,
+            prefs.dynamicColors,
+            prefs.textSize,
+            prefs.systemFont
+        )
         Observable.merge(triggers.map { it.asObservable().skip(1) })
                 .debounce(400, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
