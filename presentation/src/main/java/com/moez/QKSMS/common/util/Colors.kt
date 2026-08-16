@@ -116,9 +116,10 @@ class Colors @Inject constructor(
                 (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
                 Configuration.UI_MODE_NIGHT_YES
 
-        val color = when (isNight) {
-            Configuration.UI_MODE_NIGHT_YES -> android.R.color.system_accent1_200
-            else -> android.R.color.system_accent1_600
+        val color = if (isNight) {
+            android.R.color.system_accent1_200
+        } else {
+            android.R.color.system_accent1_600
         }
         return context.getColor(color)
     }
@@ -126,9 +127,10 @@ class Colors @Inject constructor(
     fun dynamicBackgroundColor(isNight: Boolean): Int? {
         if (!dynamicColorsSupported || !prefs.dynamicColors.get()) return null
 
-        val color = when (isNight) {
-            true -> android.R.color.system_neutral1_900
-            false -> android.R.color.system_neutral1_10
+        val color = if (isNight) {
+            android.R.color.system_neutral1_900
+        } else {
+            android.R.color.system_neutral1_10
         }
         return context.getColor(color)
     }
