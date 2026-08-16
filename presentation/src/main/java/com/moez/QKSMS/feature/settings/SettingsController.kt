@@ -143,6 +143,9 @@ class SettingsController : QkController<SettingsControllerBinding, SettingsView,
     override fun messageLinkHandlingSelected(): Observable<Int> = messageLinkHandlingDialog.adapter.menuItemClicks
 
     override fun render(state: SettingsState) {
+        val dynamicColorsEnabled = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && state.dynamicColors
+        binding.theme.isEnabled = !dynamicColorsEnabled
+        binding.theme.alpha = if (dynamicColorsEnabled) 0.5f else 1f
         binding.theme.findViewById<View>(R.id.themePreview)?.setBackgroundTint(state.theme)
         binding.night.summary = state.nightModeSummary
         nightModeDialog.adapter.selectedItem = state.nightModeId
