@@ -117,6 +117,7 @@ class WidgetProvider : AppWidgetProvider() {
         val night = prefs.night.get() || isNightMode
         val black = prefs.black.get()
         val dynamicBackground = colors.dynamicBackgroundColor(night)
+        val dynamicTextPrimary = colors.dynamicTextPrimaryColor(night)
 
         val backgroundColor = when {
             night && black -> context.getColorCompat(R.color.black)
@@ -134,10 +135,13 @@ class WidgetProvider : AppWidgetProvider() {
         }
         remoteViews.setInt(R.id.toolbar, "setColorFilter", toolbarColor)
 
-        remoteViews.setTextColor(R.id.title, context.getColorCompat(when (night) {
-            true -> R.color.textPrimaryDark
-            false -> R.color.textPrimary
-        }))
+        remoteViews.setTextColor(
+                R.id.title,
+                dynamicTextPrimary ?: context.getColorCompat(when (night) {
+                    true -> R.color.textPrimaryDark
+                    false -> R.color.textPrimary
+                })
+        )
 
         // Set adapter for conversations
         val intent = Intent(context, WidgetService::class.java)

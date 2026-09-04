@@ -21,6 +21,7 @@ package dev.octoshrimpy.quik.common.util
 import android.graphics.Typeface
 import android.os.Build
 import android.util.AttributeSet
+import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import dev.octoshrimpy.quik.R
@@ -32,6 +33,8 @@ import dev.octoshrimpy.quik.common.util.extensions.getColorCompat
 import dev.octoshrimpy.quik.common.widget.QkEditText
 import dev.octoshrimpy.quik.common.widget.QkTextView
 import dev.octoshrimpy.quik.util.Preferences
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import javax.inject.Inject
 
 
@@ -122,20 +125,49 @@ class TextViewStyler @Inject constructor(
             else -> return
         }
 
-        when (colorAttr) {
-            COLOR_THEME -> textView.setTextColor(colors.theme().theme)
-            COLOR_PRIMARY_ON_THEME -> textView.setTextColor(colors.theme().textPrimary)
-            COLOR_SECONDARY_ON_THEME -> textView.setTextColor(colors.theme().textSecondary)
-            COLOR_TERTIARY_ON_THEME -> textView.setTextColor(colors.theme().textTertiary)
+        if (colorAttr in COLOR_THEME..COLOR_TERTIARY_ON_THEME || textView is EditText) {
+            observeThemeColors(textView, colorAttr)
         }
 
         setTextSize(textView, textSizeAttr)
+    }
 
-        if (textView is EditText) {
-            val drawable = textView.resources.getDrawable(R.drawable.cursor).apply { setTint(colors.theme().theme) }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                textView.textCursorDrawable = drawable
+    private fun observeThemeColors(textView: TextView, colorAttr: Int) {
+        val applyTheme = { theme: Colors.Theme ->
+            when (colorAttr) {
+                COLOR_THEME -> textView.setTextColor(theme.theme)
+                COLOR_PRIMARY_ON_THEME -> textView.setTextColor(theme.textPrimary)
+                COLOR_SECONDARY_ON_THEME -> textView.setTextColor(theme.textSecondary)
+                COLOR_TERTIARY_ON_THEME -> textView.setTextColor(theme.textTertiary)
             }
+
+            if (textView is EditText && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                textView.textCursorDrawable = textView.resources.getDrawable(R.drawable.cursor)
+                        .apply { setTint(theme.theme) }
+            }
+        }
+
+        val themeObserver = object : View.OnAttachStateChangeListener {
+            private var disposable: Disposable? = null
+
+            override fun onViewAttachedToWindow(view: View) {
+                disposable?.dispose()
+                disposable = colors.themeObservable()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(applyTheme)
+            }
+
+            override fun onViewDetachedFromWindow(view: View) {
+                disposable?.dispose()
+                disposable = null
+            }
+        }
+
+        textView.addOnAttachStateChangeListener(themeObserver)
+        if (textView.isAttachedToWindow) {
+            themeObserver.onViewAttachedToWindow(textView)
+        } else {
+            applyTheme(colors.theme())
         }
     }
 
