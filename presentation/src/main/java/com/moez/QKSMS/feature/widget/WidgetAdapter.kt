@@ -21,6 +21,7 @@ package dev.octoshrimpy.quik.feature.widget
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.text.SpannableStringBuilder
 import android.view.View
 import android.widget.RemoteViews
@@ -62,21 +63,29 @@ class WidgetAdapter(intent: Intent) : RemoteViewsService.RemoteViewsFactory {
     private var conversations: List<Conversation> = listOf()
     private val appWidgetManager by lazy { AppWidgetManager.getInstance(context) }
 
-    private val night get() = prefs.night.get()
+    private val night
+        get() = prefs.night.get() ||
+                (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+                Configuration.UI_MODE_NIGHT_YES
     private val black get() = prefs.black.get()
     private val theme get() = colors.theme()
     private val background
-        get() = context.getColorCompat(when {
-            night && black -> R.color.black
-            night && !black -> R.color.backgroundDark
-            else -> R.color.white
-        })
+        get() = when {
+            night && black -> context.getColorCompat(R.color.black)
+            else -> colors.dynamicBackgroundColor(night) ?: context.getColorCompat(when (night) {
+                true -> R.color.backgroundDark
+                false -> R.color.white
+            })
+        }
     private val textPrimary
-        get() = context.getColorCompat(if (night) R.color.textPrimaryDark else R.color.textPrimary)
+        get() = colors.dynamicTextPrimaryColor(night)
+                ?: context.getColorCompat(if (night) R.color.textPrimaryDark else R.color.textPrimary)
     private val textSecondary
-        get() = context.getColorCompat(if (night) R.color.textSecondaryDark else R.color.textSecondary)
+        get() = colors.dynamicTextSecondaryColor(night)
+                ?: context.getColorCompat(if (night) R.color.textSecondaryDark else R.color.textSecondary)
     private val textTertiary
-        get() = context.getColorCompat(if (night) R.color.textTertiaryDark else R.color.textTertiary)
+        get() = colors.dynamicTextSecondaryColor(night)
+                ?: context.getColorCompat(if (night) R.color.textTertiaryDark else R.color.textTertiary)
 
     override fun onCreate() {
         appComponent.inject(this)

@@ -21,7 +21,10 @@ package dev.octoshrimpy.quik.common.util
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
+import android.view.ContextThemeWrapper
 import androidx.core.content.res.getColorOrThrow
+import com.google.android.material.color.DynamicColors
+import com.google.android.material.color.MaterialColors
 import dev.octoshrimpy.quik.R
 import dev.octoshrimpy.quik.common.util.extensions.getColorCompat
 import dev.octoshrimpy.quik.model.Recipient
@@ -40,7 +43,7 @@ class Colors @Inject constructor(
 ) {
 
     val dynamicColorsSupported: Boolean
-        get() = context.resources.getBoolean(R.bool.dynamic_colors_supported)
+        get() = DynamicColors.isDynamicColorAvailable()
 
     data class Theme(val theme: Int, private val colors: Colors) {
         val highlight by lazy { colors.highlightColorForTheme(theme) }
@@ -114,23 +117,36 @@ class Colors @Inject constructor(
             (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
             Configuration.UI_MODE_NIGHT_YES
 
-        return dynamicColor(
-            android.R.color.system_accent1_600,
-            android.R.color.system_accent1_200,
-            isNight
-        )
+        return dynamicColor(com.google.android.material.R.attr.colorPrimary, isNight)
     }
 
-    fun dynamicBackgroundColor(isNight: Boolean): Int? = dynamicColor(
-        android.R.color.system_neutral1_10,
-        android.R.color.system_neutral1_900,
-        isNight
-    )
+    fun dynamicBackgroundColor(isNight: Boolean): Int? =
+            dynamicColor(com.google.android.material.R.attr.colorSurface, isNight)
 
-    private fun dynamicColor(lightColor: Int, darkColor: Int, isNight: Boolean): Int? {
+    fun dynamicTextPrimaryColor(isNight: Boolean): Int? =
+            dynamicColor(com.google.android.material.R.attr.colorOnSurface, isNight)
+
+    fun dynamicTextSecondaryColor(isNight: Boolean): Int? =
+            dynamicColor(com.google.android.material.R.attr.colorOnSurfaceVariant, isNight)
+
+    private fun dynamicColor(attribute: Int, isNight: Boolean): Int? {
         if (!dynamicColorsSupported || !prefs.dynamicColors.get()) return null
 
-        return context.getColor(if (isNight) darkColor else lightColor)
+        val configuration = Configuration(context.resources.configuration).apply {
+            uiMode = (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or
+                    if (isNight) Configuration.UI_MODE_NIGHT_YES else Configuration.UI_MODE_NIGHT_NO
+        }
+        val baseContext = ContextThemeWrapper(
+                context.createConfigurationContext(configuration),
+                R.style.AppTheme
+        )
+        val dynamicContext = DynamicColors.wrapContextIfAvailable(
+            baseContext,
+            R.style.ThemeOverlay_Quik_DynamicColors
+        )
+        val fallback = MaterialColors.getColor(baseContext, attribute, 0)
+        return MaterialColors.getColor(dynamicContext, attribute, fallback)
+            .takeIf { color -> color != 0 }
     }
 
     fun highlightColorForTheme(theme: Int): Int = FloatArray(3)
@@ -165,7 +181,8 @@ class Colors @Inject constructor(
      */
     private fun measureLuminance(color: Int): Double {
         val array = intArrayOf(Color.red(color), Color.green(color), Color.blue(color))
-                .map { if (it < 0.03928) it / 12.92 else ((it + 0.055) / 1.055).pow(2.4) }
+            .map { it / 255.0 }
+            .map { if (it <= 0.03928) it / 12.92 else ((it + 0.055) / 1.055).pow(2.4) }
 
         return 0.2126 * array[0] + 0.7152 * array[1] + 0.0722 * array[2] + 0.05
     }
