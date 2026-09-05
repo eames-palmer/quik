@@ -20,27 +20,43 @@ package dev.octoshrimpy.quik.common.widget
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import com.google.android.material.materialswitch.MaterialSwitch
-import dev.octoshrimpy.quik.R
 import dev.octoshrimpy.quik.common.util.Colors
 import dev.octoshrimpy.quik.common.util.extensions.resolveThemeColor
-import dev.octoshrimpy.quik.common.util.extensions.withAlpha
 import dev.octoshrimpy.quik.injection.appComponent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 class QkSwitch @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : MaterialSwitch(context, attrs) {
 
     @Inject lateinit var colors: Colors
 
     private var themeDisposable: Disposable? = null
+    private val defaultThumbTintList by lazy { thumbTintList }
+    private val defaultTrackTintList by lazy { trackTintList }
 
     init {
         if (!isInEditMode) {
             appComponent.inject(this)
         }
+        thumbIcon = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(Color.TRANSPARENT)
+            setStroke(
+                resources.displayMetrics.density.roundToInt(),
+                context.resolveThemeColor(com.google.android.material.R.attr.colorOutline)
+            )
+            setSize(
+                (24 * resources.displayMetrics.density).roundToInt(),
+                (24 * resources.displayMetrics.density).roundToInt()
+            )
+        }
+        thumbIconTintList = null
     }
 
     override fun onAttachedToWindow() {
@@ -61,19 +77,23 @@ class QkSwitch @JvmOverloads constructor(context: Context, attrs: AttributeSet? 
     }
 
     private fun updateThemeColors(themeColor: Int) {
-        val states = arrayOf(
+        defaultThumbTintList?.let { tintList ->
+            thumbTintList = tintList.withCheckedColor(themeColor)
+        }
+        defaultTrackTintList?.let { tintList ->
+            trackTintList = tintList.withCheckedColor(themeColor)
+        }
+    }
+
+    private fun ColorStateList.withCheckedColor(color: Int): ColorStateList {
+        val stateSpecs = arrayOf(
                 intArrayOf(-android.R.attr.state_enabled),
                 intArrayOf(android.R.attr.state_checked),
                 intArrayOf())
-
-        thumbTintList = ColorStateList(states, intArrayOf(
-                context.resolveThemeColor(R.attr.switchThumbDisabled),
-                themeColor,
-                context.resolveThemeColor(R.attr.switchThumbEnabled)))
-
-        trackTintList = ColorStateList(states, intArrayOf(
-                context.resolveThemeColor(R.attr.switchTrackDisabled),
-                themeColor.withAlpha(0x4D),
-                context.resolveThemeColor(R.attr.switchTrackEnabled)))
+        val resolvedColors = stateSpecs.map { stateSpec ->
+            getColorForState(stateSpec, defaultColor)
+        }.toIntArray()
+        resolvedColors[1] = color
+        return ColorStateList(stateSpecs, resolvedColors)
     }
 }

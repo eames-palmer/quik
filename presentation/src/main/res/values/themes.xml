@@ -20,11 +20,6 @@
 <resources>
 
     <attr name="bubbleColor" format="reference" />
-    <attr name="switchThumbEnabled" format="color" />
-    <attr name="switchThumbDisabled" format="color" />
-    <attr name="switchTrackEnabled" format="color" />
-    <attr name="switchTrackDisabled" format="color" />
-
     <style name="AppLaunchTheme" parent="Theme.Material3.Dark.NoActionBar">
         <item name="android:navigationBarColor">@color/backgroundDark</item>
         <item name="android:statusBarColor">@color/backgroundDark</item>
@@ -38,7 +33,7 @@
 
     <style name="AppBaseTheme" parent="Theme.Material3.Light.NoActionBar">
         <item name="android:colorBackground">?attr/colorSurface</item>
-        <item name="android:divider">?attr/colorOutline</item>
+        <item name="android:divider">@color/separatorLight</item>
         <item name="android:navigationBarColor">?attr/colorSurface</item>
         <item name="android:queryBackground">?attr/colorSurfaceVariant</item>
         <item name="android:statusBarColor">?attr/colorSurface</item>
@@ -58,16 +53,13 @@
         <item name="colorSecondaryContainer">@color/bubbleLight</item>
         <item name="colorOnSecondaryContainer">@color/textPrimary</item>
         <item name="colorSurface">@color/backgroundLight</item>
+        <item name="colorSurfaceContainerHighest">@color/bubbleLight</item>
         <item name="colorOnSurface">@color/textPrimary</item>
         <item name="colorSurfaceVariant">@color/bubbleLight</item>
         <item name="colorOnSurfaceVariant">@color/textSecondary</item>
-        <item name="colorOutline">@color/separatorLight</item>
+        <item name="colorOutline">@color/textSecondary</item>
         <item name="colorOnBackground">@color/textPrimary</item>
         <item name="selectableItemBackground">@drawable/ripple</item>
-        <item name="switchThumbEnabled">?attr/colorSurfaceVariant</item>
-        <item name="switchThumbDisabled">?attr/colorSurface</item>
-        <item name="switchTrackEnabled">?attr/colorOutline</item>
-        <item name="switchTrackDisabled">?attr/colorSurfaceVariant</item>
         <item name="windowActionBar">false</item>
     </style>
 
@@ -88,16 +80,13 @@
         <item name="colorSecondaryContainer">@color/bubbleLight</item>
         <item name="colorOnSecondaryContainer">@color/textPrimary</item>
         <item name="colorSurface">@color/backgroundLight</item>
+        <item name="colorSurfaceContainerHighest">@color/bubbleLight</item>
         <item name="colorOnSurface">@color/textPrimary</item>
         <item name="colorSurfaceVariant">@color/bubbleLight</item>
         <item name="colorOnSurfaceVariant">@color/textSecondary</item>
-        <item name="colorOutline">@color/separatorLight</item>
+        <item name="colorOutline">@color/textSecondary</item>
         <item name="colorOnBackground">@color/textPrimary</item>
         <item name="selectableItemBackground">@drawable/ripple</item>
-        <item name="switchThumbEnabled">?attr/colorSurfaceVariant</item>
-        <item name="switchThumbDisabled">?attr/colorSurface</item>
-        <item name="switchTrackEnabled">?attr/colorOutline</item>
-        <item name="switchTrackDisabled">?attr/colorSurfaceVariant</item>
         <item name="windowActionBar">false</item>
     </style>
 
@@ -109,10 +98,6 @@
     <style name="ThemeOverlay.Quik.DynamicColors" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
         <item name="actionBarPopupTheme">@style/PopupTheme.Dynamic</item>
         <item name="bubbleColor">?attr/colorSurfaceVariant</item>
-        <item name="switchThumbEnabled">?attr/colorSurfaceVariant</item>
-        <item name="switchThumbDisabled">?attr/colorSurface</item>
-        <item name="switchTrackEnabled">?attr/colorOutline</item>
-        <item name="switchTrackDisabled">?attr/colorSurfaceVariant</item>
     </style>
 
     <style name="PopupTheme.Dynamic" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
@@ -131,10 +116,11 @@
         <item name="actionBarPopupTheme">@style/PopupTheme.Dynamic.Black</item>
         <item name="bubbleColor">@color/bubbleBlack</item>
         <item name="colorSurface">@color/black</item>
+        <item name="colorSurfaceContainerHighest">@color/bubbleBlack</item>
         <item name="colorOnSurface">@color/textPrimaryDark</item>
         <item name="colorSurfaceVariant">@color/bubbleBlack</item>
         <item name="colorOnSurfaceVariant">@color/textSecondaryDark</item>
-        <item name="colorOutline">@color/separatorDark</item>
+        <item name="colorOutline">@color/textSecondaryDark</item>
     </style>
 
     <style name="PopupTheme.Dynamic.Black" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
@@ -142,10 +128,11 @@
         <item name="android:textColor">@color/textPrimaryDark</item>
         <item name="bubbleColor">@color/bubbleBlack</item>
         <item name="colorSurface">@color/black</item>
+        <item name="colorSurfaceContainerHighest">@color/bubbleBlack</item>
         <item name="colorOnSurface">@color/textPrimaryDark</item>
         <item name="colorSurfaceVariant">@color/bubbleBlack</item>
         <item name="colorOnSurfaceVariant">@color/textSecondaryDark</item>
-        <item name="colorOutline">@color/separatorDark</item>
+        <item name="colorOutline">@color/textSecondaryDark</item>
     </style>
 
     <style name="AppTheme.Gallery" parent="Theme.Material3.Dark.NoActionBar">
@@ -154,7 +141,7 @@
 
     <style name="AppTheme.Black" parent="AppBaseTheme">
         <item name="android:colorBackground">@color/black</item>
-        <item name="android:divider">?attr/colorOutline</item>
+        <item name="android:divider">@color/separatorDark</item>
         <item name="android:navigationBarColor">@color/black</item>
         <item name="android:queryBackground">?attr/colorSurfaceVariant</item>
         <item name="android:statusBarColor">@color/black</item>
@@ -178,7 +165,7 @@
         <item name="colorOnSurface">@color/textPrimaryDark</item>
         <item name="colorSurfaceVariant">@color/bubbleBlack</item>
         <item name="colorOnSurfaceVariant">@color/textSecondaryDark</item>
-        <item name="colorOutline">@color/separatorDark</item>
+        <item name="colorOutline">@color/textSecondaryDark</item>
         <item name="colorOnBackground">@color/textPrimaryDark</item>
     </style>
 
@@ -202,7 +189,7 @@
         <item name="colorOnSurface">@color/textPrimaryDark</item>
         <item name="colorSurfaceVariant">@color/bubbleBlack</item>
         <item name="colorOnSurfaceVariant">@color/textSecondaryDark</item>
-        <item name="colorOutline">@color/separatorDark</item>
+        <item name="colorOutline">@color/textSecondaryDark</item>
         <item name="colorOnBackground">@color/textPrimaryDark</item>
     </style>
 
