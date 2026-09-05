@@ -88,8 +88,8 @@ class Colors @Inject constructor(
     fun theme(recipient: Recipient? = null): Theme {
         val pref = prefs.theme(recipient?.id ?: 0)
         val color = when {
-            recipient == null -> dynamicThemeColor() ?: pref.get()
-            !prefs.autoColor.get() || pref.isSet -> pref.get()
+            recipient == null || !prefs.autoColor.get() -> dynamicThemeColor() ?: pref.get()
+            pref.isSet -> pref.get()
             else -> generateColor(recipient)
         }
         return Theme(color, this)
@@ -102,7 +102,7 @@ class Colors @Inject constructor(
             else -> prefs.theme(recipient.id, prefs.theme().get())
         }
         val colors = when {
-            recipient == null -> Observables.combineLatest(
+            recipient == null || !prefs.autoColor.get() -> Observables.combineLatest(
                 pref.asObservable(),
                 prefs.dynamicColors.asObservable()
             ) { color, _ -> dynamicThemeColor() ?: color }
