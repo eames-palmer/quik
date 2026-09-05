@@ -98,8 +98,13 @@ abstract class QkThemedActivity : QkActivity() {
     @SuppressLint("InlinedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(getActivityThemeRes(prefs.black.get()))
-        if (!prefs.black.get() && prefs.dynamicColors.get()) {
-            DynamicColors.applyIfAvailable(this, R.style.ThemeOverlay_Quik_DynamicColors)
+        if (prefs.dynamicColors.get()) {
+            val dynamicColorsTheme = if (prefs.black.get()) {
+                R.style.ThemeOverlay_Quik_DynamicColors_Black
+            } else {
+                R.style.ThemeOverlay_Quik_DynamicColors
+            }
+            DynamicColors.applyIfAvailable(this, dynamicColorsTheme)
         }
         super.onCreate(savedInstanceState)
 

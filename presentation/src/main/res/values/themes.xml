@@ -121,6 +121,33 @@
         <item name="bubbleColor">?attr/colorSurfaceVariant</item>
     </style>
 
+    <style name="ThemeOverlay.Quik.DynamicColors.Black" parent="ThemeOverlay.Quik.DynamicColors">
+        <item name="android:colorBackground">@color/black</item>
+        <item name="android:navigationBarColor">@color/black</item>
+        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:textColorPrimary">@color/textPrimaryDark</item>
+        <item name="android:textColorSecondary">@color/textSecondaryDark</item>
+        <item name="android:textColorTertiary">@color/textTertiaryDark</item>
+        <item name="actionBarPopupTheme">@style/PopupTheme.Dynamic.Black</item>
+        <item name="bubbleColor">@color/bubbleBlack</item>
+        <item name="colorSurface">@color/black</item>
+        <item name="colorOnSurface">@color/textPrimaryDark</item>
+        <item name="colorSurfaceVariant">@color/bubbleBlack</item>
+        <item name="colorOnSurfaceVariant">@color/textSecondaryDark</item>
+        <item name="colorOutline">@color/separatorDark</item>
+    </style>
+
+    <style name="PopupTheme.Dynamic.Black" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
+        <item name="android:colorBackground">@color/black</item>
+        <item name="android:textColor">@color/textPrimaryDark</item>
+        <item name="bubbleColor">@color/bubbleBlack</item>
+        <item name="colorSurface">@color/black</item>
+        <item name="colorOnSurface">@color/textPrimaryDark</item>
+        <item name="colorSurfaceVariant">@color/bubbleBlack</item>
+        <item name="colorOnSurfaceVariant">@color/textSecondaryDark</item>
+        <item name="colorOutline">@color/separatorDark</item>
+    </style>
+
     <style name="AppTheme.Gallery" parent="Theme.Material3.Dark.NoActionBar">
         <item name="android:background">@color/black</item>
     </style>
