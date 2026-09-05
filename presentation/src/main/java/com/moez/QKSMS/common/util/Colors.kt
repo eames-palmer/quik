@@ -136,13 +136,16 @@ class Colors @Inject constructor(
             uiMode = (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or
                     if (isNight) Configuration.UI_MODE_NIGHT_YES else Configuration.UI_MODE_NIGHT_NO
         }
-        val baseContext = ContextThemeWrapper(
-                context.createConfigurationContext(configuration),
-                R.style.AppTheme
-        )
+        val baseTheme = if (prefs.black.get()) R.style.AppTheme_Black else R.style.AppTheme
+        val dynamicTheme = if (prefs.black.get()) {
+            R.style.ThemeOverlay_Quik_DynamicColors_Black
+        } else {
+            R.style.ThemeOverlay_Quik_DynamicColors
+        }
+        val baseContext = ContextThemeWrapper(context.createConfigurationContext(configuration), baseTheme)
         val dynamicContext = DynamicColors.wrapContextIfAvailable(
             baseContext,
-            R.style.ThemeOverlay_Quik_DynamicColors
+            dynamicTheme
         )
         val fallback = MaterialColors.getColor(baseContext, attribute, 0)
         return MaterialColors.getColor(dynamicContext, attribute, fallback)
