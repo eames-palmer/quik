@@ -90,58 +90,30 @@
     <!-- Black theme -->
     <style name="AppTheme.Black" parent="AppBaseTheme">
         <item name="android:colorBackground">@color/black</item>
-        <item name="android:divider">@color/separatorDark</item>
         <item name="android:navigationBarColor">@color/black</item>
-        <item name="android:queryBackground">?attr/colorSurfaceVariant</item>
         <item name="android:statusBarColor">@color/black</item>
-        <item name="android:textColorPrimary">?attr/colorOnSurface</item>
-        <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
-        <item name="android:textColorTertiary">?attr/colorOnSurfaceVariant</item>
         <item name="android:windowBackground">@color/black</item>
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="actionBarPopupTheme">@style/PopupTheme.Black</item>
-        <item name="bubbleColor">?attr/colorSurfaceVariant</item>
         <item name="colorPrimary">@color/black</item>
-        <item name="colorOnPrimary">@color/textPrimaryDark</item>
         <item name="colorPrimaryContainer">@color/bubbleBlack</item>
-        <item name="colorOnPrimaryContainer">@color/textPrimaryDark</item>
-        <item name="colorSecondary">@color/textSecondaryDark</item>
-        <item name="colorOnSecondary">@color/black</item>
         <item name="colorSecondaryContainer">@color/bubbleBlack</item>
-        <item name="colorOnSecondaryContainer">@color/textPrimaryDark</item>
         <item name="colorSurface">@color/black</item>
         <item name="colorSurfaceContainerHighest">@color/bubbleBlack</item>
-        <item name="colorOnSurface">@color/textPrimaryDark</item>
         <item name="colorSurfaceVariant">@color/bubbleBlack</item>
-        <item name="colorOnSurfaceVariant">@color/textSecondaryDark</item>
-        <item name="colorOutline">@color/textSecondaryDark</item>
-        <item name="colorOnBackground">@color/textPrimaryDark</item>
     </style>
 
     <style name="AppThemeDialog.Black" parent="AppThemeDialog">
         <item name="android:colorBackground">@color/black</item>
-        <item name="android:textColorPrimary">?attr/colorOnSurface</item>
-        <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
-        <item name="android:textColorTertiary">?attr/colorOnSurfaceVariant</item>
         <item name="android:windowBackground">@color/black</item>
         <item name="actionBarPopupTheme">@style/PopupTheme.Black</item>
-        <item name="bubbleColor">?attr/colorSurfaceVariant</item>
         <item name="colorPrimary">@color/black</item>
-        <item name="colorOnPrimary">@color/textPrimaryDark</item>
         <item name="colorPrimaryContainer">@color/bubbleBlack</item>
-        <item name="colorOnPrimaryContainer">@color/textPrimaryDark</item>
-        <item name="colorSecondary">@color/textSecondaryDark</item>
-        <item name="colorOnSecondary">@color/black</item>
         <item name="colorSecondaryContainer">@color/bubbleBlack</item>
-        <item name="colorOnSecondaryContainer">@color/textPrimaryDark</item>
         <item name="colorSurface">@color/black</item>
         <item name="colorSurfaceContainerHighest">@color/bubbleBlack</item>
-        <item name="colorOnSurface">@color/textPrimaryDark</item>
         <item name="colorSurfaceVariant">@color/bubbleBlack</item>
-        <item name="colorOnSurfaceVariant">@color/textSecondaryDark</item>
-        <item name="colorOutline">@color/textSecondaryDark</item>
-        <item name="colorOnBackground">@color/textPrimaryDark</item>
     </style>
 
     <style name="PopupTheme.Black" parent="PopupTheme">
