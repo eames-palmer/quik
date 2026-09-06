@@ -29,6 +29,8 @@ import dev.octoshrimpy.quik.common.util.TextViewStyler.Companion.SIZE_PRIMARY
 import dev.octoshrimpy.quik.common.util.TextViewStyler.Companion.SIZE_SECONDARY
 import dev.octoshrimpy.quik.common.util.TextViewStyler.Companion.SIZE_TERTIARY
 import dev.octoshrimpy.quik.common.util.TextViewStyler.Companion.SIZE_TOOLBAR
+import dev.octoshrimpy.quik.common.util.TextViewStyler.Companion.SIZE_DIALOG
+import dev.octoshrimpy.quik.common.util.TextViewStyler.Companion.SIZE_EMOJI
 import dev.octoshrimpy.quik.common.util.extensions.getColorCompat
 import dev.octoshrimpy.quik.common.widget.QkEditText
 import dev.octoshrimpy.quik.common.widget.QkTextView
@@ -37,6 +39,57 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import javax.inject.Inject
 
+private data class TextViewAttributes(
+    val color: Int,
+    val textSize: Int
+)
+
+private val textSizePresets = mapOf(
+    SIZE_PRIMARY to floatArrayOf(14f, 16f, 18f, 20f, 40f),
+    SIZE_SECONDARY to floatArrayOf(12f, 14f, 16f, 18f, 36f),
+    SIZE_TERTIARY to floatArrayOf(10f, 12f, 14f, 16f, 32f),
+    SIZE_TOOLBAR to floatArrayOf(18f, 20f, 22f, 26f, 52f),
+    SIZE_DIALOG to floatArrayOf(16f, 18f, 20f, 24f, 48f),
+    SIZE_EMOJI to floatArrayOf(28f, 32f, 36f, 40f, 80f)
+)
+
+private fun readTextViewAttributes(
+    textView: TextView,
+    attrs: AttributeSet?
+): TextViewAttributes? {
+    val (styleable, colorAttribute, textSizeAttribute) = when (textView) {
+        is QkTextView -> Triple(
+            R.styleable.QkTextView,
+            R.styleable.QkTextView_textColor,
+            R.styleable.QkTextView_textSize
+        )
+
+        is QkEditText -> Triple(
+            R.styleable.QkEditText,
+            R.styleable.QkEditText_textColor,
+            R.styleable.QkEditText_textSize
+        )
+
+        else -> return null
+    }
+
+    return textView.context.obtainStyledAttributes(attrs, styleable).run {
+        try {
+            TextViewAttributes(
+                color = getInt(colorAttribute, -1),
+                textSize = getInt(textSizeAttribute, -1)
+            )
+        } finally {
+            recycle()
+        }
+    }
+}
+
+private fun textSizeFor(textSizeAttribute: Int, textSizePreference: Int): Float? {
+    return textSizePresets[textSizeAttribute]?.let { sizes ->
+        sizes.getOrNull(textSizePreference) ?: sizes[Preferences.TEXT_SIZE_NORMAL]
+    }
+}
 
 
 class TextViewStyler @Inject constructor(
@@ -59,77 +112,37 @@ class TextViewStyler @Inject constructor(
         const val SIZE_EMOJI = 5
 
         fun applyEditModeAttributes(textView: TextView, attrs: AttributeSet?) {
-            textView.run {
-                var colorAttr = 0
-                var textSizeAttr = 0
+            val attributes = readTextViewAttributes(textView, attrs) ?: return
 
-                when (this) {
-                    is QkTextView -> context.obtainStyledAttributes(attrs, R.styleable.QkTextView).run {
-                        colorAttr = getInt(R.styleable.QkTextView_textColor, -1)
-                        textSizeAttr = getInt(R.styleable.QkTextView_textSize, -1)
-                        recycle()
-                    }
+            textView.setTextColor(when (attributes.color) {
+                COLOR_PRIMARY_ON_THEME -> textView.context.getColorCompat(R.color.textPrimaryDark)
+                COLOR_SECONDARY_ON_THEME -> textView.context.getColorCompat(R.color.textSecondaryDark)
+                COLOR_TERTIARY_ON_THEME -> textView.context.getColorCompat(R.color.textTertiaryDark)
+                COLOR_THEME -> textView.context.getColorCompat(R.color.tools_theme)
+                else -> textView.currentTextColor
+            })
 
-                    is QkEditText -> context.obtainStyledAttributes(attrs, R.styleable.QkEditText).run {
-                        colorAttr = getInt(R.styleable.QkEditText_textColor, -1)
-                        textSizeAttr = getInt(R.styleable.QkEditText_textSize, -1)
-                        recycle()
-                    }
-
-                    else -> return
-                }
-                setTextColor(when (colorAttr) {
-                    COLOR_PRIMARY_ON_THEME -> context.getColorCompat(R.color.textPrimaryDark)
-                    COLOR_SECONDARY_ON_THEME -> context.getColorCompat(R.color.textSecondaryDark)
-                    COLOR_TERTIARY_ON_THEME -> context.getColorCompat(R.color.textTertiaryDark)
-                    COLOR_THEME -> context.getColorCompat(R.color.tools_theme)
-                    else -> currentTextColor
-                })
-
-                textSize = when (textSizeAttr) {
-                    SIZE_PRIMARY -> 16f
-                    SIZE_SECONDARY -> 14f
-                    SIZE_TERTIARY -> 12f
-                    SIZE_TOOLBAR -> 20f
-                    SIZE_DIALOG -> 18f
-                    SIZE_EMOJI -> 32f
-                    else -> textSize / paint.density
-                }
-            }
+            textView.textSize = textSizeFor(
+                attributes.textSize,
+                Preferences.TEXT_SIZE_NORMAL
+            ) ?: textView.textSize / textView.paint.density
         }
     }
 
     fun applyAttributes(textView: TextView, attrs: AttributeSet?) {
-        var colorAttr = 0
-        var textSizeAttr = 0
-
         if (!prefs.systemFont.get()) {
             fontProvider.getLato { lato ->
                 textView.setTypeface(lato, textView.typeface?.style ?: Typeface.NORMAL)
             }
         }
 
-        when (textView) {
-            is QkTextView -> textView.context.obtainStyledAttributes(attrs, R.styleable.QkTextView).run {
-                colorAttr = getInt(R.styleable.QkTextView_textColor, -1)
-                textSizeAttr = getInt(R.styleable.QkTextView_textSize, -1)
-                recycle()
-            }
+        val attributes = readTextViewAttributes(textView, attrs) ?: return
 
-            is QkEditText -> textView.context.obtainStyledAttributes(attrs, R.styleable.QkEditText).run {
-                colorAttr = getInt(R.styleable.QkEditText_textColor, -1)
-                textSizeAttr = getInt(R.styleable.QkEditText_textSize, -1)
-                recycle()
-            }
-
-            else -> return
+        if (attributes.color in COLOR_THEME..COLOR_TERTIARY_ON_THEME || textView is EditText) {
+            observeThemeColors(textView, attributes.color)
         }
 
-        if (colorAttr in COLOR_THEME..COLOR_TERTIARY_ON_THEME || textView is EditText) {
-            observeThemeColors(textView, colorAttr)
-        }
-
-        setTextSize(textView, textSizeAttr)
+        setTextSize(textView, attributes.textSize)
     }
 
     private fun observeThemeColors(textView: TextView, colorAttr: Int) {
@@ -178,62 +191,7 @@ class TextViewStyler @Inject constructor(
      * @see SIZE_TOOLBAR
      */
     fun setTextSize(textView: TextView, textSizeAttr: Int) {
-        val textSizePref = prefs.textSize.get()
-        when (textSizeAttr) {
-            SIZE_PRIMARY -> textView.textSize = when (textSizePref) {
-                Preferences.TEXT_SIZE_SMALL -> 14f
-                Preferences.TEXT_SIZE_NORMAL -> 16f
-                Preferences.TEXT_SIZE_LARGE -> 18f
-                Preferences.TEXT_SIZE_LARGER -> 20f
-                Preferences.TEXT_SIZE_SUPER -> 40f
-                else -> 16f
-            }
-
-            SIZE_SECONDARY -> textView.textSize = when (textSizePref) {
-                Preferences.TEXT_SIZE_SMALL -> 12f
-                Preferences.TEXT_SIZE_NORMAL -> 14f
-                Preferences.TEXT_SIZE_LARGE -> 16f
-                Preferences.TEXT_SIZE_LARGER -> 18f
-                Preferences.TEXT_SIZE_SUPER -> 36f
-                else -> 14f
-            }
-
-            SIZE_TERTIARY -> textView.textSize = when (textSizePref) {
-                Preferences.TEXT_SIZE_SMALL -> 10f
-                Preferences.TEXT_SIZE_NORMAL -> 12f
-                Preferences.TEXT_SIZE_LARGE -> 14f
-                Preferences.TEXT_SIZE_LARGER -> 16f
-                Preferences.TEXT_SIZE_SUPER -> 32f
-                else -> 12f
-            }
-
-            SIZE_TOOLBAR -> textView.textSize = when (textSizePref) {
-                Preferences.TEXT_SIZE_SMALL -> 18f
-                Preferences.TEXT_SIZE_NORMAL -> 20f
-                Preferences.TEXT_SIZE_LARGE -> 22f
-                Preferences.TEXT_SIZE_LARGER -> 26f
-                Preferences.TEXT_SIZE_SUPER -> 52f
-                else -> 20f
-            }
-
-            SIZE_DIALOG -> textView.textSize = when (textSizePref) {
-                Preferences.TEXT_SIZE_SMALL -> 16f
-                Preferences.TEXT_SIZE_NORMAL -> 18f
-                Preferences.TEXT_SIZE_LARGE -> 20f
-                Preferences.TEXT_SIZE_LARGER -> 24f
-                Preferences.TEXT_SIZE_SUPER -> 48f
-                else -> 18f
-            }
-
-            SIZE_EMOJI -> textView.textSize = when (textSizePref) {
-                Preferences.TEXT_SIZE_SMALL -> 28f
-                Preferences.TEXT_SIZE_NORMAL -> 32f
-                Preferences.TEXT_SIZE_LARGE -> 36f
-                Preferences.TEXT_SIZE_LARGER -> 40f
-                Preferences.TEXT_SIZE_SUPER -> 80f
-                else -> 32f
-            }
-        }
+        textSizeFor(textSizeAttr, prefs.textSize.get())?.let { textView.textSize = it }
     }
 
 }

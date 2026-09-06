@@ -45,12 +45,30 @@ class Colors @Inject constructor(
     val dynamicColorsSupported: Boolean
         get() = DynamicColors.isDynamicColorAvailable()
 
+    private val nightMode: Boolean
+        get() = prefs.night.get() ||
+                (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+                Configuration.UI_MODE_NIGHT_YES
+
     data class Theme(val theme: Int, private val colors: Colors) {
         val highlight by lazy { colors.highlightColorForTheme(theme) }
         val textPrimary by lazy { colors.textPrimaryOnThemeForColor(theme) }
         val textSecondary by lazy { colors.textSecondaryOnThemeForColor(theme) }
         val textTertiary by lazy { colors.textTertiaryOnThemeForColor(theme) }
     }
+
+    data class WidgetPalette(
+        val background: Int,
+        val toolbar: Int,
+        val textPrimary: Int,
+        val textSecondary: Int,
+        val textTertiary: Int
+    )
+
+    private data class DynamicColorContexts(
+        val base: Context,
+        val dynamic: Context
+    )
 
     val materialColors: List<List<Int>> = listOf(
         R.array.material_red,
@@ -113,31 +131,79 @@ class Colors @Inject constructor(
     }
 
     private fun dynamicThemeColor(): Int? {
-        val isNight = prefs.night.get() ||
-            (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
-            Configuration.UI_MODE_NIGHT_YES
-
-        return dynamicColor(com.google.android.material.R.attr.colorPrimary, isNight)
+        return dynamicColor(com.google.android.material.R.attr.colorPrimary, nightMode)
     }
 
-    fun dynamicBackgroundColor(isNight: Boolean): Int? =
-            dynamicColor(com.google.android.material.R.attr.colorSurface, isNight)
+    fun widgetPalette(isNight: Boolean = nightMode): WidgetPalette {
+        val dynamicContexts = dynamicColorContexts(isNight)
+        val dynamicBackground = dynamicColor(
+            dynamicContexts,
+            com.google.android.material.R.attr.colorSurface
+        )
+        val dynamicTextPrimary = dynamicColor(
+            dynamicContexts,
+            com.google.android.material.R.attr.colorOnSurface
+        )
+        val dynamicTextSecondary = dynamicColor(
+            dynamicContexts,
+            com.google.android.material.R.attr.colorOnSurfaceVariant
+        )
+        val black = prefs.black.get()
+        val blackColor = context.getColorCompat(R.color.black)
+        val surface = dynamicBackground ?: context.getColorCompat(
+            if (isNight) R.color.backgroundDark else R.color.backgroundLight
+        )
+        val background = if (isNight && black) {
+            blackColor
+        } else {
+            dynamicBackground ?: context.getColorCompat(
+                if (isNight) R.color.backgroundDark else R.color.white
+            )
+        }
+        val textPrimary = dynamicTextPrimary ?: context.getColorCompat(
+            if (isNight) R.color.textPrimaryDark else R.color.textPrimary
+        )
+        val textSecondary = dynamicTextSecondary ?: context.getColorCompat(
+            if (isNight) R.color.textSecondaryDark else R.color.textSecondary
+        )
+        val textTertiary = dynamicTextSecondary ?: context.getColorCompat(
+            if (isNight) R.color.textTertiaryDark else R.color.textTertiary
+        )
 
-    fun dynamicTextPrimaryColor(isNight: Boolean): Int? =
-            dynamicColor(com.google.android.material.R.attr.colorOnSurface, isNight)
-
-    fun dynamicTextSecondaryColor(isNight: Boolean): Int? =
-            dynamicColor(com.google.android.material.R.attr.colorOnSurfaceVariant, isNight)
+        return WidgetPalette(
+            background = background,
+            toolbar = if (isNight && black) blackColor else surface,
+            textPrimary = textPrimary,
+            textSecondary = textSecondary,
+            textTertiary = textTertiary
+        )
+    }
 
     private fun dynamicColor(attribute: Int, isNight: Boolean): Int? {
+        return dynamicColor(dynamicColorContexts(isNight), attribute)
+    }
+
+    private fun dynamicColor(
+        contexts: DynamicColorContexts?,
+        attribute: Int
+    ): Int? {
+        if (contexts == null) return null
+
+        val fallback = MaterialColors.getColor(contexts.base, attribute, 0)
+        return MaterialColors.getColor(contexts.dynamic, attribute, fallback)
+            .takeIf { color -> color != 0 }
+    }
+
+    private fun dynamicColorContexts(isNight: Boolean): DynamicColorContexts? {
         if (!dynamicColorsSupported || !prefs.dynamicColors.get()) return null
 
         val configuration = Configuration(context.resources.configuration).apply {
             uiMode = (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or
                     if (isNight) Configuration.UI_MODE_NIGHT_YES else Configuration.UI_MODE_NIGHT_NO
         }
-        val baseTheme = if (prefs.black.get()) R.style.AppTheme_Black else R.style.AppTheme
-        val dynamicTheme = if (prefs.black.get()) {
+        val black = prefs.black.get()
+        val baseTheme = if (black) R.style.AppTheme_Black else R.style.AppTheme
+        val dynamicTheme = if (black) {
             R.style.ThemeOverlay_Quik_DynamicColors_Black
         } else {
             R.style.ThemeOverlay_Quik_DynamicColors
@@ -147,9 +213,7 @@ class Colors @Inject constructor(
             baseContext,
             dynamicTheme
         )
-        val fallback = MaterialColors.getColor(baseContext, attribute, 0)
-        return MaterialColors.getColor(dynamicContext, attribute, fallback)
-            .takeIf { color -> color != 0 }
+        return DynamicColorContexts(baseContext, dynamicContext)
     }
 
     fun highlightColorForTheme(theme: Int): Int = FloatArray(3)

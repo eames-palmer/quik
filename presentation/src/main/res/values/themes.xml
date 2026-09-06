@@ -123,7 +123,7 @@
         <item name="colorOutline">@color/textSecondaryDark</item>
     </style>
 
-    <style name="PopupTheme.Dynamic.Black" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
+    <style name="PopupTheme.Dynamic.Black" parent="PopupTheme.Dynamic">
         <item name="android:colorBackground">@color/black</item>
         <item name="android:textColor">@color/textPrimaryDark</item>
         <item name="bubbleColor">@color/bubbleBlack</item>
