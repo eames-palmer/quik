@@ -61,14 +61,19 @@ class WidgetAdapter(intent: Intent) : RemoteViewsService.RemoteViewsFactory {
     private var conversations: List<Conversation> = listOf()
     private val appWidgetManager by lazy { AppWidgetManager.getInstance(context) }
 
-    private val theme get() = colors.theme()
+    private lateinit var palette: Colors.WidgetPalette
+    private lateinit var theme: Colors.Theme
 
     override fun onCreate() {
         appComponent.inject(this)
+        palette = colors.widgetPalette()
+        theme = colors.theme()
     }
 
     override fun onDataSetChanged() {
         conversations = conversationRepo.getConversationsSnapshot(prefs.unreadAtTop.get())
+        palette = colors.widgetPalette()
+        theme = colors.theme()
 
         val remoteViews = RemoteViews(context.packageName, R.layout.widget)
         appWidgetManager.partiallyUpdateAppWidget(appWidgetId, remoteViews)
@@ -93,7 +98,6 @@ class WidgetAdapter(intent: Intent) : RemoteViewsService.RemoteViewsFactory {
 
     private fun getConversationView(position: Int): RemoteViews {
         val conversation = conversations[position]
-        val palette = colors.widgetPalette()
 
         val remoteViews = RemoteViews(context.packageName, R.layout.widget_list_item)
 
@@ -167,7 +171,6 @@ class WidgetAdapter(intent: Intent) : RemoteViewsService.RemoteViewsFactory {
     }
 
     private fun getOverflowView(): RemoteViews {
-        val palette = colors.widgetPalette()
         val view = RemoteViews(context.packageName, R.layout.widget_loading)
         view.setTextColor(R.id.loadingText, palette.textSecondary)
         view.setTextViewText(R.id.loadingText, context.getString(R.string.widget_more))
