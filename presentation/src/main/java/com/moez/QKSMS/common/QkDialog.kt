@@ -21,7 +21,6 @@ package dev.octoshrimpy.quik.common
 import android.app.Activity
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Typeface
 import android.view.View
 import android.widget.AbsListView
 import android.widget.CheckedTextView
@@ -31,10 +30,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.TextViewCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.octoshrimpy.quik.common.util.Colors
-import dev.octoshrimpy.quik.common.util.FontProvider
 import dev.octoshrimpy.quik.common.util.TextViewStyler
 import dev.octoshrimpy.quik.common.util.extensions.resolveThemeColor
-import dev.octoshrimpy.quik.util.Preferences
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import javax.inject.Inject
@@ -47,8 +44,6 @@ data class MenuItem(val title: String, val actionId: Int)
 class QkDialog @Inject constructor(
     private val context: Context,
     private val colors: Colors,
-    private val fontProvider: FontProvider,
-    private val prefs: Preferences,
     private val textViewStyler: TextViewStyler
 ) {
 
@@ -100,12 +95,8 @@ class QkDialog @Inject constructor(
         fun styleRow(view: View) {
             (view as? CheckedTextView)?.let { textView ->
                 TextViewCompat.setCompoundDrawableTintList(textView, tint)
+                textViewStyler.applyFont(textView)
                 textViewStyler.setTextSize(textView, TextViewStyler.SIZE_PRIMARY)
-
-                if (!prefs.systemFont.get()) {
-                    val typefaceStyle = textView.typeface?.style ?: Typeface.NORMAL
-                    fontProvider.getLato { lato -> textView.setTypeface(lato, typefaceStyle) }
-                }
             }
         }
 
