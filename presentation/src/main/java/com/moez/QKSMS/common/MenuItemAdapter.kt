@@ -65,11 +65,11 @@ class MenuItemAdapter @Inject constructor(private val context: Context, private 
         val binding = MenuListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
         val states = arrayOf(
-                intArrayOf(android.R.attr.state_activated),
-                intArrayOf(-android.R.attr.state_activated))
+            intArrayOf(android.R.attr.state_checked),
+            intArrayOf(-android.R.attr.state_checked))
 
         val text = parent.context.resolveThemeColor(android.R.attr.textColorTertiary)
-        binding.check.imageTintList = ColorStateList(states, intArrayOf(colors.theme().theme, text))
+        binding.check.buttonTintList = ColorStateList(states, intArrayOf(colors.theme().theme, text))
 
         return QkBindingViewHolder(binding).apply {
             binding.root.setOnClickListener {
@@ -83,7 +83,7 @@ class MenuItemAdapter @Inject constructor(private val context: Context, private 
         val menuItem = getItem(position)
 
         holder.binding.title.text = menuItem.title
-        holder.binding.check.isActivated = (menuItem.actionId == selectedItem)
+        holder.binding.check.isChecked = menuItem.actionId == selectedItem
         holder.binding.check.setVisible(selectedItem != null)
     }
 

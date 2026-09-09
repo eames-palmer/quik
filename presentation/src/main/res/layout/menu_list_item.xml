@@ -25,13 +25,14 @@
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
-    <ImageView
+    <com.google.android.material.radiobutton.MaterialRadioButton
         android:id="@+id/check"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginStart="24dp"
-        android:src="@drawable/radio_button"
-        tools:tint="?android:attr/textColorTertiary" />
+        android:clickable="false"
+        android:focusable="false"
+        tools:buttonTint="?android:attr/textColorTertiary" />
 
     <dev.octoshrimpy.quik.common.widget.QkTextView
         android:id="@+id/title"
