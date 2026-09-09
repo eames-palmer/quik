@@ -99,11 +99,7 @@ class TextViewStyler @Inject constructor(
     }
 
     fun applyAttributes(textView: TextView, attrs: AttributeSet?) {
-        if (!prefs.systemFont.get()) {
-            fontProvider.getLato { lato ->
-                textView.setTypeface(lato, textView.typeface?.style ?: Typeface.NORMAL)
-            }
-        }
+        applyFont(textView)
 
         var colorAttr = 0
         var textSizeAttr = 0
@@ -129,6 +125,14 @@ class TextViewStyler @Inject constructor(
         }
 
         setTextSize(textView, textSizeAttr)
+    }
+
+    fun applyFont(textView: TextView) {
+        if (!prefs.systemFont.get()) {
+            fontProvider.getLato { lato ->
+                textView.setTypeface(lato, textView.typeface?.style ?: Typeface.NORMAL)
+            }
+        }
     }
 
     private fun observeThemeColors(textView: TextView, colorAttr: Int) {
