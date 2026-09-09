@@ -34,7 +34,6 @@ import dev.octoshrimpy.quik.feature.compose.ComposeActivity
 import dev.octoshrimpy.quik.feature.main.MainActivity
 import dev.octoshrimpy.quik.manager.WidgetManager
 import dev.octoshrimpy.quik.receiver.StartActivityFromWidgetReceiver
-import dev.octoshrimpy.quik.util.Preferences
 import timber.log.Timber
 import javax.inject.Inject
 import androidx.core.net.toUri
@@ -42,7 +41,6 @@ import androidx.core.net.toUri
 class WidgetProvider : AppWidgetProvider() {
 
     @Inject lateinit var colors: Colors
-    @Inject lateinit var prefs: Preferences
 
     override fun onReceive(context: Context, intent: Intent) {
         AndroidInjection.inject(this, context)
