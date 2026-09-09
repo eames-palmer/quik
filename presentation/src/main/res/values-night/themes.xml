@@ -58,4 +58,9 @@
         <item name="selectableItemBackground">@drawable/ripple_dark</item>
     </style>
 
+    <style name="PopupTheme" parent="ThemeOverlay.Material3.Dark">
+        <item name="android:colorBackground">?attr/colorSurface</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
 </resources>

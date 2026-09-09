@@ -30,7 +30,6 @@ import dev.octoshrimpy.quik.common.util.extensions.getColorCompat
 import dev.octoshrimpy.quik.model.Recipient
 import dev.octoshrimpy.quik.util.Preferences
 import io.reactivex.Observable
-import io.reactivex.rxkotlin.Observables
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.absoluteValue
@@ -109,14 +108,13 @@ class Colors @Inject constructor(
             prefs.autoColor.get() -> prefs.theme(recipient.id, generateColor(recipient))
             else -> prefs.theme(recipient.id, prefs.theme().get())
         }
-        val colors = when {
-            recipient == null || !prefs.autoColor.get() -> Observables.combineLatest(
-                pref.asObservable(),
-                prefs.dynamicColors.asObservable()
-            ) { color, dynamicColorsEnabled ->
-                if (dynamicColorsEnabled) dynamicThemeColor() ?: color else color
-            }
-            else -> pref.asObservable()
+        val colors = if (recipient == null || !prefs.autoColor.get()) {
+            pref.asObservable()
+                    .map { color ->
+                        if (prefs.dynamicColors.get()) dynamicThemeColor() ?: color else color
+                    }
+        } else {
+            pref.asObservable()
         }
         return colors
                 .map { color -> Theme(color, this) }
