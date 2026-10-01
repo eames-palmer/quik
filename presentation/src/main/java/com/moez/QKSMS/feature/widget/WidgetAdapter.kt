@@ -31,6 +31,8 @@ import androidx.core.text.italic
 import dev.octoshrimpy.quik.R
 import dev.octoshrimpy.quik.common.util.Colors
 import dev.octoshrimpy.quik.common.util.DateFormatter
+import dev.octoshrimpy.quik.common.util.WidgetPalette
+import dev.octoshrimpy.quik.common.util.WidgetPaletteResolver
 import dev.octoshrimpy.quik.common.util.extensions.dpToPx
 import dev.octoshrimpy.quik.injection.appComponent
 import dev.octoshrimpy.quik.model.Contact
@@ -51,6 +53,7 @@ class WidgetAdapter(intent: Intent) : RemoteViewsService.RemoteViewsFactory {
 
     @Inject lateinit var context: Context
     @Inject lateinit var colors: Colors
+    @Inject lateinit var widgetPaletteResolver: WidgetPaletteResolver
     @Inject lateinit var conversationRepo: ConversationRepository
     @Inject lateinit var dateFormatter: DateFormatter
     @Inject lateinit var prefs: Preferences
@@ -61,18 +64,18 @@ class WidgetAdapter(intent: Intent) : RemoteViewsService.RemoteViewsFactory {
     private var conversations: List<Conversation> = listOf()
     private val appWidgetManager by lazy { AppWidgetManager.getInstance(context) }
 
-    private lateinit var palette: Colors.WidgetPalette
+    private lateinit var palette: WidgetPalette
     private lateinit var theme: Colors.Theme
 
     override fun onCreate() {
         appComponent.inject(this)
-        palette = colors.widgetPalette()
+        palette = widgetPaletteResolver.resolve()
         theme = colors.theme()
     }
 
     override fun onDataSetChanged() {
         conversations = conversationRepo.getConversationsSnapshot(prefs.unreadAtTop.get())
-        palette = colors.widgetPalette()
+        palette = widgetPaletteResolver.resolve()
         theme = colors.theme()
 
         val remoteViews = RemoteViews(context.packageName, R.layout.widget)

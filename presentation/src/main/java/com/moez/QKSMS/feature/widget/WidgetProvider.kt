@@ -30,6 +30,7 @@ import android.widget.RemoteViews
 import dagger.android.AndroidInjection
 import dev.octoshrimpy.quik.R
 import dev.octoshrimpy.quik.common.util.Colors
+import dev.octoshrimpy.quik.common.util.WidgetPaletteResolver
 import dev.octoshrimpy.quik.feature.compose.ComposeActivity
 import dev.octoshrimpy.quik.feature.main.MainActivity
 import dev.octoshrimpy.quik.manager.WidgetManager
@@ -41,6 +42,7 @@ import androidx.core.net.toUri
 class WidgetProvider : AppWidgetProvider() {
 
     @Inject lateinit var colors: Colors
+    @Inject lateinit var widgetPaletteResolver: WidgetPaletteResolver
 
     override fun onReceive(context: Context, intent: Intent) {
         AndroidInjection.inject(this, context)
@@ -107,7 +109,7 @@ class WidgetProvider : AppWidgetProvider() {
         val remoteViews = RemoteViews(context.packageName, R.layout.widget)
 
         // Apply colors from theme
-        val palette = colors.widgetPalette()
+        val palette = widgetPaletteResolver.resolve()
 
         remoteViews.setInt(R.id.background, "setColorFilter", palette.background)
         remoteViews.setInt(R.id.toolbar, "setColorFilter", palette.toolbar)

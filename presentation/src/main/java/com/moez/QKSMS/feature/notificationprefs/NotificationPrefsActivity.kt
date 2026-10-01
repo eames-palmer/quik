@@ -79,8 +79,8 @@ class NotificationPrefsActivity : QkThemedActivity(), NotificationPrefsView {
         binding.ringtone.setVisible(!hasOreo)
 
         previewModeDialog.setTitle(R.string.settings_notification_previews_title)
-        previewModeDialog.setData(R.array.notification_preview_options)
-        actionsDialog.setData(R.array.notification_actions)
+        previewModeDialog.setOptions(R.array.notification_preview_options)
+        actionsDialog.setOptions(R.array.notification_actions)
 
         // Listen to clicks for all of the preferences
         (0 until binding.preferences.childCount)

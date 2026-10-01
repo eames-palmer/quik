@@ -95,15 +95,15 @@ class SettingsController : QkController<SettingsControllerBinding, SettingsView,
         binding.preferences.postDelayed({ binding.preferences.animateLayoutChanges = true }, 100)
 
         when (Build.VERSION.SDK_INT >= 29) {
-            true -> nightModeDialog.setData(R.array.night_modes)
-            false -> nightModeDialog.data = context.resources.getStringArray(R.array.night_modes)
+            true -> nightModeDialog.setOptions(R.array.night_modes)
+            false -> nightModeDialog.options = context.resources.getStringArray(R.array.night_modes)
                     .mapIndexed { index, title -> MenuItem(title, index) }
                     .drop(1)
         }
-        textSizeDialog.setData(R.array.text_sizes)
-        sendDelayDialog.setData(R.array.delayed_sending_labels)
-        mmsSizeDialog.setData(R.array.mms_sizes, R.array.mms_sizes_ids)
-        messageLinkHandlingDialog.setData(R.array.messageLinkHandlings, R.array.messageLinkHandling_ids)
+        textSizeDialog.setOptions(R.array.text_sizes)
+        sendDelayDialog.setOptions(R.array.delayed_sending_labels)
+        mmsSizeDialog.setOptions(R.array.mms_sizes, R.array.mms_sizes_ids)
+        messageLinkHandlingDialog.setOptions(R.array.messageLinkHandlings, R.array.messageLinkHandling_ids)
 
         binding.about.summary = context.getString(R.string.settings_version, BuildConfig.VERSION_NAME)
     }
@@ -140,7 +140,8 @@ class SettingsController : QkController<SettingsControllerBinding, SettingsView,
     override fun messageLinkHandlingSelected(): Observable<Int> = messageLinkHandlingDialog.menuItemClicks
 
     override fun render(state: SettingsState) {
-        val dynamicColorsEnabled = colors.dynamicColorsSupported && state.dynamicColors
+        val dynamicColorsSupported = colors.dynamicColorsSupported
+        val dynamicColorsEnabled = dynamicColorsSupported && state.dynamicColors
         binding.theme.isEnabled = !dynamicColorsEnabled
         binding.theme.alpha = if (dynamicColorsEnabled) 0.5f else 1f
         binding.theme.findViewById<View>(R.id.themePreview)?.setBackgroundTint(state.theme)
@@ -154,8 +155,7 @@ class SettingsController : QkController<SettingsControllerBinding, SettingsView,
         binding.black.setVisible(state.nightModeId != Preferences.NIGHT_MODE_OFF)
         binding.black.checkbox?.isChecked = state.black
 
-        binding.dynamicColors.setVisible(colors.dynamicColorsSupported)
-        binding.dynamicColors.checkbox?.isChecked = state.dynamicColors
+        binding.dynamicColors.checkbox?.isChecked = dynamicColorsEnabled
 
         binding.autoEmoji.checkbox?.isChecked = state.autoEmojiEnabled
 

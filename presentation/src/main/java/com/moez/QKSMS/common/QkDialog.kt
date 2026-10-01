@@ -49,28 +49,28 @@ class QkDialog @Inject constructor(
 
     val menuItemClicks: Subject<Int> = PublishSubject.create()
 
-    var data: List<MenuItem> = emptyList()
+    var options: List<MenuItem> = emptyList()
     var selectedItem: Int? = null
 
     var title: String? = null
 
-    fun setData(@ArrayRes titles: Int, @ArrayRes values: Int = -1) {
+    fun setOptions(@ArrayRes titles: Int, @ArrayRes values: Int = -1) {
         val valueInts = if (values != -1) context.resources.getIntArray(values) else null
 
-        data = context.resources.getStringArray(titles)
+        options = context.resources.getStringArray(titles)
                 .mapIndexed { index, title -> MenuItem(title, valueInts?.getOrNull(index) ?: index) }
     }
 
     fun show(activity: Activity) {
-        val items = data.map { item -> item.title as CharSequence }.toTypedArray()
+        val items = options.map { item -> item.title as CharSequence }.toTypedArray()
         val selectedIndex = selectedItem?.let { selected ->
-            data.indexOfFirst { item -> item.actionId == selected }
+            options.indexOfFirst { item -> item.actionId == selected }
         } ?: -1
 
         val dialog = MaterialAlertDialogBuilder(activity)
                 .setTitle(title)
                 .setSingleChoiceItems(items, selectedIndex) { dialog, index ->
-                    menuItemClicks.onNext(data[index].actionId)
+                    menuItemClicks.onNext(options[index].actionId)
                     dialog.dismiss()
                 }
                 .create()

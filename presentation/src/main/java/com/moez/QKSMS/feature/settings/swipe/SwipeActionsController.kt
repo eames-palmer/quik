@@ -56,7 +56,7 @@ class SwipeActionsController : QkController<SwipeActionsControllerBinding, Swipe
     init {
         appComponent.inject(this)
 
-        actionsDialog.setData(R.array.settings_swipe_actions)
+        actionsDialog.setOptions(R.array.settings_swipe_actions)
     }
 
     override fun onViewCreated() {
